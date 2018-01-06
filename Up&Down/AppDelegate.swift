@@ -2,6 +2,7 @@
 //  AppDelegate.swift
 //  Up&Down
 //
+//  Copyright © 2017 hpeng526. All rights reserved.
 //  Copyright © 2017 bsdelf. All rights reserved.
 //  Copyright © 2016 郭佳哲. All rights reserved.
 //
@@ -16,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let autoLaunchMenu:NSMenuItem
     
     override init() {
-        statusItem = NSStatusBar.system().statusItem(withLength: 120)
+        statusItem = NSStatusBar.system().statusItem(withLength: 160)
         
         menu = NSMenu()
         autoLaunchMenu = NSMenuItem()

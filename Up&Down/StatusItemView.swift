@@ -2,6 +2,7 @@
 //  StatusItemView.swift
 //  Up&Down
 //
+//  Copyright © 2017 hpeng526. All rights reserved.
 //  Copyright © 2017 bsdelf. All rights reserved.
 //  Copyright © 2016 郭佳哲. All rights reserved.
 //
@@ -12,9 +13,9 @@ import Foundation
 extension String {
     func leftPadding(toLength: Int, withPad: String = " ") -> String {
         
-        guard toLength > self.characters.count else { return self }
+        guard toLength > self.count else { return self }
         
-        let padding = String(repeating: withPad, count: toLength - self.characters.count)
+        let padding = String(repeating: withPad, count: toLength - self.count)
         return padding + self
     }
 }
@@ -36,6 +37,9 @@ open class StatusItemView: NSControl {
     
     var fanSpeedStr = "- -"
     var coreTempStr = "- -"
+    
+    var usrStr = "- "
+    var sysStr = "- "
     
     init(statusItem aStatusItem: NSStatusItem, menu aMenu: NSMenu) {
         statusItem = aStatusItem
@@ -60,26 +64,33 @@ open class StatusItemView: NSControl {
         fontColor = (darkMode||mouseDown) ? NSColor.white : NSColor.black
         let fontAttributes = [NSFontAttributeName: NSFont.monospacedDigitSystemFont(ofSize: fontSize, weight: NSFontWeightRegular), NSForegroundColorAttributeName: fontColor] as [String : Any]
         
+        let sysString = NSAttributedString(string: sysStr+" %S", attributes: fontAttributes)
+        let sysRect = sysString.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
+        sysString.draw(at: NSMakePoint(bounds.width - sysRect.width - 5, 0))
+        
+        let usrString = NSAttributedString(string: usrStr+" %U", attributes: fontAttributes)
+        let usrRect = usrString.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
+        usrString.draw(at: NSMakePoint(bounds.width - usrRect.width - 5, 10))
         
         let fanSpeedString = NSAttributedString(string: fanSpeedStr+" ♨", attributes: fontAttributes)
         let fanSpeedRect = fanSpeedString.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
-        fanSpeedString.draw(at: NSMakePoint(bounds.width - fanSpeedRect.width - 5, 0))
+        fanSpeedString.draw(at: NSMakePoint(bounds.width - fanSpeedRect.width - 5 - 35, 0))
         
         let coreTempString = NSAttributedString(string: coreTempStr+" ℃", attributes: fontAttributes)
         let coreTempRect = coreTempString.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
-        coreTempString.draw(at: NSMakePoint(bounds.width - coreTempRect.width - 5, 10))
+        coreTempString.draw(at: NSMakePoint(bounds.width - coreTempRect.width - 5 - 35, 10))
         
 
         let upRateString = NSAttributedString(string: upRate+" ↑", attributes: fontAttributes)
         let upRateRect = upRateString.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
-        upRateString.draw(at: NSMakePoint(bounds.width - upRateRect.width - 40 - 5, 0))
+        upRateString.draw(at: NSMakePoint(bounds.width - upRateRect.width - 40 - 5 - 35, 0))
         
         let downRateString = NSAttributedString(string: downRate+" ↓", attributes: fontAttributes)
         let downRateRect = downRateString.boundingRect(with: NSSize(width: 100, height: 100), options: .usesLineFragmentOrigin)
-        downRateString.draw(at: NSMakePoint(bounds.width - downRateRect.width - 40 - 5, 10))
+        downRateString.draw(at: NSMakePoint(bounds.width - downRateRect.width - 40 - 5 - 35, 10))
     }
     
-    open func setRateData(up: Double, down: Double, coreTemp: Int, fanSpeed: Int) {
+    open func setRateData(up: Double, down: Double, coreTemp: Int, fanSpeed: Int, sys: Int, usr: Int) {
         let _upRate = formatRateData(up)
         let _downRate = formatRateData(down)
         upRate = addBlank(str: _upRate, toLength: 11)
@@ -87,7 +98,10 @@ open class StatusItemView: NSControl {
             
         coreTempStr = addBlank(str: "\(coreTemp)", toLength: 4)
         fanSpeedStr = addBlank(str: fanSpeed == 0 ? "0" : "\(fanSpeed)", toLength: 4)
-            
+        
+        sysStr = addBlank(str: "\(sys)", toLength: 4)
+        usrStr = addBlank(str: "\(usr)", toLength: 4)
+        
         setNeedsDisplay()
     }
     

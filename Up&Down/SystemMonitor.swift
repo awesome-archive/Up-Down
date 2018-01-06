@@ -2,6 +2,7 @@
 //  MonitorTask.swift
 //  Up&Down
 //
+//  Copyright © 2017 hpeng526. All rights reserved.
 //  Copyright © 2017 bsdelf. All rights reserved.
 //  Copyright © 2016 郭佳哲. All rights reserved.
 //
@@ -18,6 +19,7 @@ open class SystemMonitor: NSObject {
     
     var _ibytes: Double = 0;
     var _obytes: Double = 0;
+    fileprivate var sys = System()
     
     func start() {
         do {
@@ -38,14 +40,17 @@ open class SystemMonitor: NSObject {
         do {
             let coreTemp = try SMCKit.temperature(TemperatureSensors.CPU_0_PROXIMITY.code)
             let fanSpeed = try SMCKit.fanCurrentSpeed(0)
-        
-        
+            
+            let usage = sys.usageCPU()
+            let user = usage.user
+            let system = usage.system
+            
             var ibytes: CDouble = 0;
             var obytes: CDouble = 0;
             let ok = readNetIO(&ibytes, &obytes);
             if (ok) {
                 if (_ibytes > 0 && _obytes > 0) {
-                    statusItemView.setRateData(up: obytes - _obytes, down: ibytes - _ibytes, coreTemp: Int(coreTemp), fanSpeed: fanSpeed);
+                    statusItemView.setRateData(up: obytes - _obytes, down: ibytes - _ibytes, coreTemp: Int(coreTemp), fanSpeed: fanSpeed, sys: Int(system), usr: Int(user));
                 }
                 _ibytes = ibytes;
                 _obytes = obytes;
